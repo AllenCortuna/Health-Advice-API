@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Health Advice</title>
+</head>
+<body>
+  <div class="container">
+    <h1>Health Advice</h1>
+    <div id="illness-list">
+      <h2>Available Illnesses</h2>
+      <ul id="illnesses"></ul>
+    </div>
+    <div id="illness-details">
+      <h2>Illness Details</h2>
+      <p id="description"></p>
+      <h3>Do:</h3>
+      <ul id="do-list"></ul>
+      <h3>Don't:</h3>
+      <ul id="dont-list"></ul>
+      <h3>Goals:</h3>
+      <ul id="goals-list"></ul>
+    </div>
+  </div>
+
+  <script>
+    // Fetch and display illnesses
+    fetch("/illness")
+      .then((res) => res.json())
+      .then((data) => {
+        const illnessList = document.getElementById("illnesses");
+        data.illnesses.forEach((illness) => {
+          const li = document.createElement("li");
+          li.textContent = illness;
+          li.addEventListener("click", () => fetchIllnessDetails(illness));
+          illnessList.appendChild(li);
+        });
+      });
+
+    // Fetch and display details for a specific illness
+    function fetchIllnessDetails(illness) {
+      fetch(`/illness/${illness}`)
+        .then((res) => res.json())
+        .then((data) => {
+          document.getElementById("description").textContent = data.description;
+          populateList("do-list", data.do);
+          populateList("dont-list", data.dont);
+          populateList("goals-list", data.goals);
+        })
+        .catch(() => alert("Illness not found."));
+    }
+
+    function populateList(listId, items) {
+      const list = document.getElementById(listId);
+      list.innerHTML = "";
+      items.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        list.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
