@@ -1,13 +1,7 @@
-const express = require("express");
-const path = require("path");
+// api/illness.js
 
+const express = require('express');
 const app = express();
-
-// Use the built-in express.json() middleware instead of body-parser
-app.use(express.json());
-
-// Serve static files from the 'public' folder
-app.use(express.static(path.join(__dirname, "public")));
 
 // Sample illness data
 const illnessData = {
@@ -46,6 +40,9 @@ const illnessData = {
   }
 };
 
+// Middleware to parse JSON
+app.use(express.json());
+
 // API routes
 app.get("/illness", (req, res) => {
   res.status(200).json({ illnesses: Object.keys(illnessData) });
@@ -61,9 +58,7 @@ app.get("/illness/:name", (req, res) => {
   }
 });
 
-// Start the server
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Health Advice API is running on http://localhost:${PORT}`);
-});
-
+// Export the function for Vercel serverless
+module.exports = (req, res) => {
+  app(req, res); // Make sure the express app handles the request
+};

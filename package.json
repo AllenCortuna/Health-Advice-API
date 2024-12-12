@@ -1,15 +1,12 @@
 {
-  "name": "desktop",
+  "name": "health-advice-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Health Advice API deployed on Vercel",
+  "main": "api/illness.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "vercel dev"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "devDependencies": {
-    "jest": "^29.7.0"
+  "dependencies": {
+    "express": "^4.17.1"
   }
 }
