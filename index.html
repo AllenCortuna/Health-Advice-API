@@ -5,6 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
   <title>Health Advice</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #4CAF50;
+    }
+    #illness-list {
+      margin-bottom: 20px;
+    }
+    #illness-list ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    #illness-list li {
+      cursor: pointer;
+      padding: 10px;
+      border: 1px solid #ddd;
+      margin: 5px 0;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+    #illness-list li:hover {
+      background-color: #e0e0e0;
+    }
+    #illness-details {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    #illness-details h2 {
+      color: #4CAF50;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    p {
+      font-size: 16px;
+      line-height: 1.6;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -28,7 +80,12 @@
   <script>
     // Fetch and display illnesses
     fetch("/illness")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Failed to fetch illnesses');
+        }
+        return res.json();
+      })
       .then((data) => {
         const illnessList = document.getElementById("illnesses");
         data.illnesses.forEach((illness) => {
@@ -37,30 +94,60 @@
           li.addEventListener("click", () => fetchIllnessDetails(illness));
           illnessList.appendChild(li);
         });
+      })
+      .catch((error) => {
+        console.error("Error fetching illnesses:", error);
+        alert("Could not fetch illness data. Please try again later.");
       });
 
     // Fetch and display details for a specific illness
     function fetchIllnessDetails(illness) {
       fetch(`/illness/${illness}`)
-        .then((res) => res.json())
-        .then((data) => {
-          document.getElementById("description").textContent = data.description;
-          populateList("do-list", data.do);
-          populateList("dont-list", data.dont);
-          populateList("goals-list", data.goals);
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error('Illness not found');
+          }
+          return res.json();
         })
-        .catch(() => alert("Illness not found."));
+        .then((data) => {
+          if (data && data.description) {
+            document.getElementById("description").textContent = data.description;
+            populateList("do-list", data.do);
+            populateList("dont-list", data.dont);
+            populateList("goals-list", data.goals);
+          } else {
+            alert("No data found for this illness.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching illness details:", error);
+          alert("Illness not found or an error occurred.");
+          clearIllnessDetails(); // Clear details if there's an error
+        });
     }
 
     function populateList(listId, items) {
       const list = document.getElementById(listId);
       list.innerHTML = "";
-      items.forEach((item) => {
-        const li = document.createElement("li");
-        li.textContent = item;
-        list.appendChild(li);
-      });
+      if (items && items.length > 0) {
+        items.forEach((item) => {
+          const li = document.createElement("li");
+          li.textContent = item;
+          list.appendChild(li);
+        });
+      } else {
+        list.innerHTML = "<li>No information available.</li>";
+      }
+    }
+
+    // Clear illness details if not found
+    function clearIllnessDetails() {
+      document.getElementById("description").textContent = "";
+      document.getElementById("do-list").innerHTML = "";
+      document.getElementById("dont-list").innerHTML = "";
+      document.getElementById("goals-list").innerHTML = "";
     }
   </script>
 </body>
 </html>
+

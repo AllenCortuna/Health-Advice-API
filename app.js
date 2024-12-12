@@ -1,10 +1,13 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const path = require("path");
 
 const app = express();
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, "public"))); // Serve static files from the 'public' folder
+
+// Use the built-in express.json() middleware instead of body-parser
+app.use(express.json());
+
+// Serve static files from the 'public' folder
+app.use(express.static(path.join(__dirname, "public")));
 
 // Sample illness data
 const illnessData = {
@@ -58,7 +61,9 @@ app.get("/illness/:name", (req, res) => {
   }
 });
 
+// Start the server
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Health Advice API is running on http://localhost:${PORT}`);
 });
+
