@@ -2,9 +2,9 @@
   "name": "health-advice-api",
   "version": "1.0.0",
   "description": "Health Advice API deployed on Vercel",
-  "main": "api/illness.js",
+  "main": "app.js",
   "scripts": {
-    "start": "vercel dev"
+      "start": "node app.js"
   },
   "dependencies": {
     "express": "^4.17.1"
